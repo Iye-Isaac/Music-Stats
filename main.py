@@ -58,14 +58,14 @@ def user_top_read():
         return redirect(auth_url)
 
     top_artists = sp.current_user_top_artists(limit=10, time_range='medium_term')
-    top_artists_ = [(artist['name'], artist['external_urls']['spotify']) for artist in top_artists['items']]
+    top_artists_ = [(artist['name'], artist['external_urls']['spotify'], artist['images'][0]['url'] if artist['images'] else None) for artist in top_artists['items']]
 
     top_tracks = sp.current_user_top_tracks(limit=10, time_range='medium_term')
-    top_tracks_ = [(track['name'], track['external_urls']['spotify']) for track in top_tracks['items']]
+    top_tracks_ = [(track['name'], track['external_urls']['spotify'], track['album']['images'][0]['url'] if track['album']['images'] else None) for track in top_tracks['items']]
 
     return jsonify({
-        'top_artists': [{'name': n, 'url': u} for n, u in top_artists_],
-        'top_tracks': [{'name': n, 'url': u} for n, u in top_tracks_]
+        'top_artists': [{'name': n, 'url': u, 'image': img} for n, u, img in top_artists_],
+        'top_tracks': [{'name': n, 'url': u, 'image': img} for n, u, img in top_tracks_]
     })
 
 @app.route('/logout')
