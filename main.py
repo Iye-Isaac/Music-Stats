@@ -42,13 +42,13 @@ def home():
     if not sp_oauth.validate_token(cache_handler.get_cached_token()):
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
-    return redirect(url_for('user_top_read'))
+    return redirect('https://mymix.framer.website/stats')
 
 
 @app.route('/callback')
 def callback():
     sp_oauth.get_access_token(request.args['code'])
-    return redirect(url_for('user_top_read'))
+    return redirect('https://mymix.framer.website/stats')
 
 
 @app.route('/user_top_read')
