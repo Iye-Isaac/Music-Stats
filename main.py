@@ -19,12 +19,8 @@ from spotipy.cache_handler import FlaskSessionCacheHandler
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # add this right after creating the app
-
-
+CORS(app)
 load_dotenv()
-
-app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(64)
 
 client_id = os.environ.get('SPOTIFY_CLIENT_ID')
@@ -48,10 +44,14 @@ sp = Spotify(auth_manager=sp_oauth)
 
 @app.route('/')
 def home():
-    if not sp_oauth.validate_token(cache_handler.get_cached_token()):
+    cached_token = cache_handler.get_cached_token()
+    if not sp_oauth.validate_token(cached_token):
         auth_url = sp_oauth.get_authorize_url()
         return redirect(auth_url)
-    return redirect('https://mymix.framer.website/stats')
+
+    user_token = secrets.token_urlsafe(16)
+    user_tokens[user_token] = cached_token
+    return redirect(f"{FRAMER_STATS_URL}?token={user_token}")
 
 
 @app.route('/callback')
